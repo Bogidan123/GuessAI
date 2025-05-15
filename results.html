@@ -1,21 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GUESS AI - Results</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GUESS AI - Results</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <header>
-        <h1>GUESS AI</h1>
-    </header>
-    <main>
-        <p>Час обрати з ким ти спілкувався - людина чи ШІ!</p>
-        <div class="button-container">
-            <a href="index.html" class="choice">Людина</a>
-            <a href="index.html" class="choice">ШІ</a>
-        </div>
-    </main>
+  <header>
+    <h1>GUESS AI</h1>
+  </header>
+  <main>
+    <p>Час обрати з ким ти спілкувався – людина чи ШІ!</p>
+    <div class="button-container">
+      <a href="#" class="choice" onclick="recordGuess('human')">Людина</a>
+      <a href="#" class="choice" onclick="recordGuess('ai')">ШІ</a>
+    </div>
+  </main>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAMUXw7GRwhq_-Pz7RFU6yR01izYi4cCuw",
+      authDomain: "guess-ai.firebaseapp.com",
+      projectId: "guess-ai",
+      storageBucket: "guess-ai.firebasestorage.app",
+      messagingSenderId: "182407504429",
+      appId: "1:182407504429:web:0e662e4136b286f6a2cea4",
+      measurementId: "G-62J2DK6D97"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function recordGuess(guess) {
+      const username = prompt("Введи ще раз своє ім’я:");
+      if (!username) {
+        alert("Ім’я обов’язкове!");
+        return;
+      }
+
+      db.ref("guesses").push({
+        username,
+        guess
+      });
+
+      alert(`Вибір "${guess === 'ai' ? 'ШІ' : 'Людина'}" збережено. Дякуємо!`);
+      window.location.href = "index.html";
+    }
+  </script>
 </body>
 </html>
