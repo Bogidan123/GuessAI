@@ -22,42 +22,83 @@
             <button onclick="sendMessage()">Send</button>
         </footer>
     </main>
-    <script>
-        // Timer Logic
-        let timeLeft = 120; // 2 minutes in seconds
-        const timerElement = document.getElementById("timer");
+    <!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
 
-        const countdown = setInterval(() => {
-            const minutes = Math.floor(timeLeft / 60); // Calculate minutes
-            const seconds = timeLeft % 60;            // Calculate seconds
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAMUXw7GRwhq_-Pz7RFU6yR01izYi4cCuw",
+    authDomain: "guess-ai.firebaseapp.com",
+    projectId: "guess-ai",
+    storageBucket: "guess-ai.firebasestorage.app",
+    messagingSenderId: "182407504429",
+    appId: "1:182407504429:web:0e662e4136b286f6a2cea4",
+    measurementId: "G-62J2DK6D97"
+  };
 
-            // Update Timer Display
-            timerElement.textContent = `${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
 
-            // Redirect to Results Page when time is up
-            if (timeLeft <= 0) {
-                clearInterval(countdown);
-                window.location.href = "results.html";
-            }
+<script>
+  const sessionType = Math.random() > 0.5 ? "ai" : "human";
+  const username = prompt("Введіть своє ім’я");
 
-            timeLeft--; // Decrease time
-        }, 1000); // Run every second
+  let timeLeft = 120;
+  const timerElement = document.getElementById("timer");
 
-        // Message Handling
-        function sendMessage() {
-            const input = document.getElementById("userInput");
-            const message = input.value.trim();
-            const messageContainer = document.getElementById("messages");
+  const countdown = setInterval(() => {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerElement.textContent = `${minutes < 10 ? "0" : ""}${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    if (timeLeft <= 0) {
+      clearInterval(countdown);
+      window.location.href = "результати.html";
+    }
+    timeLeft--;
+  }, 1000);
 
-            if (message) {
-                const messageBox = document.createElement("div");
-                messageBox.className = "message-box";
-                messageBox.innerHTML = <p>User: ${message}</p>;
-                messageContainer.appendChild(messageBox);
+  function sendMessage() {
+    const input = document.getElementById("userInput");
+    const message = input.value.trim();
+    const container = document.getElementById("messages");
 
-                input.value = ""; // Clear input field
-            }
-        }
-    </script>
+    if (message) {
+      const box = document.createElement("div");
+      box.className = "message-box";
+      box.innerHTML = `<p>${username}: ${message}</p>`;
+      container.appendChild(box);
+      input.value = "";
+
+      db.ref("chat").push({ username, message });
+
+      if (sessionType === "ai") {
+        const reply = getBotReply(message);
+        setTimeout(() => {
+          const aiBox = document.createElement("div");
+          aiBox.className = "message-box";
+          aiBox.innerHTML = `<p>AI Bot 🤖: ${reply}</p>`;
+          container.appendChild(aiBox);
+        }, 1500);
+      }
+    }
+  }
+
+  function getBotReply(msg) {
+    msg = msg.toLowerCase();
+    if (msg.includes("привіт") || msg.includes("хай")) {
+      return "Привіт! Як справи?";
+    } else if (msg.includes("кіно")) {
+      return "Я люблю фільми. А ти?";
+    } else if (msg.includes("гра")) {
+      return "Я граю в шахи!";
+    } else {
+      return "Цікаво! Розкажи більше.";
+    }
+  }
+</script>
+
 </body>
 </html>
